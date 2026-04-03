@@ -41,30 +41,5 @@ Creates app.db and tables if they do not exist:
 python database.py
 5. Start the API server
 uvicorn main:app --reload
-The API will be available at http://127.0.0.1:8000.
 
-Interactive docs: http://127.0.0.1:8000/docs
-Alternative docs: http://127.0.0.1:8000/redoc
-On startup, main.py seeds dummy users and content (idempotent where applicable) so you can call /recommendations/{user_id} and /feedback without manual inserts.
 
-API Endpoints
-Base URL (local): http://127.0.0.1:8000
-
-Method	Path	Description
-GET	/health	Liveness-style check; confirms the server process is responding.
-GET	/metrics	Placeholder endpoint reserved for future observability metrics.
-GET	/users	Returns all rows from the Users table as JSON.
-GET	/recommendations/{user_id}	Returns recommendations for the given user: cold start (trending) if they have no interactions, otherwise smart recommendations (content not yet interacted with). Returns User not found if the ID is invalid.
-POST	/feedback	JSON body: user_id, content_id, rating (1–5). Inserts into Interactions and returns success with interaction_id. Validates that user and content exist.
-Example: submit feedback
-curl -X POST "http://127.0.0.1:8000/feedback" ^
-  -H "Content-Type: application/json" ^
-  -d "{\"user_id\": 1, \"content_id\": 1, \"rating\": 5}"
-(On macOS/Linux, use \ line continuation and single quotes for -d as preferred.)
-
-Example: recommendations
-curl "http://127.0.0.1:8000/recommendations/1"
-Why This Matters (for recruiters)
-Problem framing: Implements the distinction between cold start and post-feedback recommendation behavior—a core topic in recommender systems and product ML.
-Backend fundamentals: REST design, request validation, relational modeling, and SQL that mirrors real filtering logic.
-Extensibility: Clear separation between API layer and SQLite makes it straightforward to add collaborative filtering, embeddings, or a production database later.
